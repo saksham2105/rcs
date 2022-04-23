@@ -12,7 +12,7 @@ public enum ServletContainerEnum {
         this.name = name;
     }
     public String getName() {return this.name;}
-    public ServletContainerEnum findByName(String name) {
+    public static ServletContainerEnum findByName(String name) {
         for(ServletContainerEnum servletContainerEnum : ServletContainerEnum.values()) {
             if (servletContainerEnum.getName().equalsIgnoreCase(name)) {
                 return servletContainerEnum;

@@ -13,7 +13,7 @@ public enum EvictionPolicyEnum {
         this.name = name;
     }
     public String getName() {return this.name;}
-    public EvictionPolicyEnum findByName(String name) {
+    public static EvictionPolicyEnum findByName(String name) {
         for(EvictionPolicyEnum evictionPolicyEnum : EvictionPolicyEnum.values()) {
             if (evictionPolicyEnum.getName().equalsIgnoreCase(name)) {
                 return evictionPolicyEnum;
