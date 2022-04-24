@@ -6,8 +6,10 @@ import org.caching.server.rcs.enums.CacheExceptionEnum;
 import org.caching.server.rcs.exceptions.CacheException;
 import org.caching.server.rcs.models.MessageDetails;
 import org.caching.server.rcs.models.ResponseWrapper;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+@Component
 public class CachingControllerBase {
     private static final Logger logger = LogManager.getLogger(CachingControllerBase.class);
 
@@ -24,7 +26,7 @@ public class CachingControllerBase {
     public ResponseWrapper handleCacheException(CacheException cacheException) {
         logger.error("Generic exception arrived",cacheException,cacheException.getMessage());
         logger.error(cacheException,cacheException);
-        MessageDetails message = MessageDetails.builder().code(CacheExceptionEnum.CACHE.getCode()).text(CacheExceptionEnum.CACHE.getText()).build();
+        MessageDetails message = MessageDetails.builder().code(CacheExceptionEnum.CACHE.getCode()).text(cacheException.getMessage()).build();
         ResponseWrapper responseWrapper = ResponseWrapper.builder().success(false).message(message).build();
         return responseWrapper;
     }

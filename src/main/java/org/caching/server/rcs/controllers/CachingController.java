@@ -1,6 +1,7 @@
 package org.caching.server.rcs.controllers;
 
 import org.caching.server.rcs.dto.CacheManagerDto;
+import org.caching.server.rcs.exceptions.CacheException;
 import org.caching.server.rcs.services.ICachingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -13,7 +14,7 @@ public class CachingController extends CachingControllerBase {
     private ICachingService cachingService;
 
     @PostMapping(path = "${cacheApi}")
-    public void cache(@RequestBody CacheManagerDto cacheManagerDto) {
-       this.cachingService.validateAndPopulate(cacheManagerDto);
+    public void cache(@RequestBody CacheManagerDto cacheManagerDto) throws CacheException {
+       this.cachingService.validateAndHandleCaching(cacheManagerDto);
     }
 }
