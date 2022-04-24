@@ -2,7 +2,8 @@ package org.caching.server.rcs.enums;
 
 public enum CacheExceptionEnum {
     GENERIC("500","Something went wrong"),
-    CACHE("RCS500","Exception occured from while caching data");
+    CACHE("RCS500","Exception occured from while caching data"),
+    INVALID_REQUEST("RCS400","Invalid Request");
 
     @Override
     public String toString() {

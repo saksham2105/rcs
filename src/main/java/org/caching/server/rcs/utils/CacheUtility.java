@@ -42,8 +42,10 @@ public class CacheUtility {
      */
     public byte[] getCompressedCacheBytesByKey(String key, ServletContext servletContext) {
         if (servletContext.getAttribute(key) != null) {
-            logger.info("Key : {} is found in servlet context", key);
-            return (byte[]) servletContext.getAttribute(key);
+            byte[] bytes = (byte[]) servletContext.getAttribute(key);
+            logger.info("Key : {} is found in servlet context for cache", key);
+            logger.info("Data in servlet context for cache : {}",bytes);
+            return bytes;
         }
         return null;
     }
@@ -57,8 +59,10 @@ public class CacheUtility {
      */
     public byte[] getCompressedLRUDLLBytesByKey(String key, ServletContext servletContext) {
         if (servletContext.getAttribute(key) != null) {
-            logger.info("Key : {} is found in servlet context", key);
-            return (byte[]) servletContext.getAttribute(key);
+            byte[] bytes = (byte[]) servletContext.getAttribute(key);
+            logger.info("Key : {} is found in servlet context for dll", key);
+            logger.info("Data in servlet context for dll : {}",bytes);
+            return bytes;
         }
         return null;
     }
@@ -113,7 +117,8 @@ public class CacheUtility {
      */
     public Map<String, Object> decompressCacheData(String key, ServletContext servletContext) {
         try {
-            byte[] compressedBytes = this.getCompressedCacheBytesByKey(key.concat(this.keyDelimeter).concat(this.mapKeySuffix), servletContext);
+            byte[] compressedBytes = this.getCompressedCacheBytesByKey(key, servletContext);
+            logger.info("Compressed Bytes after decompressing cache data for key : {}",compressedBytes);
             ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(compressedBytes);
             GZIPInputStream gzipInputStream = new GZIPInputStream(byteArrayInputStream);
             ObjectInputStream objectIn = new ObjectInputStream(gzipInputStream);
@@ -136,7 +141,7 @@ public class CacheUtility {
      */
     public ArrayList<Pair<String, Object>> decompressLRUDLL(String key, ServletContext servletContext) {
         try {
-            byte[] compressedBytes = this.getCompressedLRUDLLBytesByKey(key.concat(this.keyDelimeter).concat(this.dllKeySuffix), servletContext);
+            byte[] compressedBytes = this.getCompressedLRUDLLBytesByKey(key, servletContext);
             ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(compressedBytes);
             GZIPInputStream gzipInputStream = new GZIPInputStream(byteArrayInputStream);
             ObjectInputStream objectIn = new ObjectInputStream(gzipInputStream);

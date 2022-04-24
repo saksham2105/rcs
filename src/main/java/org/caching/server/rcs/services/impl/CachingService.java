@@ -16,7 +16,6 @@ import org.springframework.stereotype.Repository;
 
 import javax.servlet.ServletContext;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
 
@@ -84,5 +83,12 @@ public class CachingService implements ICachingService {
     public void put(String key, byte[] value,CacheManagerDto cacheManagerDto) throws CacheException {
         ServletContext servletContext = (ServletContext) this.servletContainerFactory.getServletContainer(ServletContainerEnum.SERVLETCONTEXT);
         this.cacheUtility.scheduleTimerTask(new Timer(),cacheManagerDto,servletContext,key,value);
+    }
+
+    @Override
+    public Object getCache(String name) throws CacheException {
+        ServletContext servletContext = (ServletContext) this.servletContainerFactory.getServletContainer(ServletContainerEnum.SERVLETCONTEXT);
+        Map<String,Object> cache = this.cacheUtility.decompressCacheData(name.concat(keyDelimeter).concat(mapKeySuffix),servletContext);
+        return cache;
     }
 }
