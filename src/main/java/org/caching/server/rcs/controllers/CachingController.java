@@ -7,12 +7,12 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(path = "${apiPrefix}")
-public class CachingController {
+public class CachingController extends CachingControllerBase {
 
     @Autowired
     private ICachingService cachingService;
 
-    @PostMapping(value = "cache")
+    @PostMapping(path = "${cacheApi}")
     public void cache(@RequestBody CacheManagerDto cacheManagerDto) {
        this.cachingService.validateAndPopulate(cacheManagerDto);
     }
