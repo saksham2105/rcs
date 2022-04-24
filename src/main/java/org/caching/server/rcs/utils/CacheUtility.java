@@ -13,9 +13,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -233,5 +232,38 @@ public class CacheUtility {
         }
         byte[] compressedBytes = this.compressLRUDLL(doublyLinkedList);
         return compressedBytes;
+    }
+
+    public void scheduleTimerTask(Timer timer,CacheManagerDto cacheManagerDto,
+                                  ServletContext servletContext,String key,byte[] value) {
+        final int[] currentMillisecond = {0};
+        ReentrantLock lock = new ReentrantLock();
+        int totalMilliSecondsForProcessing = cacheManagerDto.getTimeToLive() * 1000; //In Seconds
+        try {
+            //Acquiring Lock so that no one can remodify
+            lock.lock();
+            servletContext.setAttribute(key,value);
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    if (currentMillisecond[0] >= totalMilliSecondsForProcessing) {
+                        timer.cancel();
+                        servletContext.removeAttribute(cacheManagerDto.getCacheName().concat(keyDelimeter).concat(mapKeySuffix));
+                        servletContext.removeAttribute(cacheManagerDto.getCacheName().concat(keyDelimeter).concat(dllKeySuffix));
+                    } else {
+                        currentMillisecond[0] += 1000;
+                    }
+                }
+            },0,1000);
+        } catch (Exception e) {
+            logger.error("Error Occured while scheduling timer task shutting down timer");
+            logger.error(e,e);
+            timer.cancel();
+            lock.unlock();
+        }
+        finally {
+            timer.cancel();
+            lock.unlock();
+        }
     }
 }

@@ -5,5 +5,5 @@ import org.caching.server.rcs.exceptions.CacheException;
 
 public interface ICachingService {
     public void validateAndHandleCaching(CacheManagerDto cacheManagerDto) throws CacheException;
-    public void put(String key, byte[] value) throws CacheException;
+    public void put(String key, byte[] value,CacheManagerDto cacheManagerDto) throws CacheException;
 }

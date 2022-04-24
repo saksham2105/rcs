@@ -18,6 +18,7 @@ import javax.servlet.ServletContext;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Timer;
 
 @Repository("cachingService")
 public class CachingService implements ICachingService {
@@ -59,14 +60,14 @@ public class CachingService implements ICachingService {
               ArrayList<Pair<String ,Object>> doublyLinkedList = cacheUtility.buildNewLRUDLL(cacheManagerDto.getKey(),cacheManagerDto.getValue(),cacheManagerDto.getMaxElementsInMemory());
               byte[] compressedBytes = this.cacheUtility.compressCacheData(cacheData);
               byte[] compressedDllBytes = this.cacheUtility.compressLRUDLL(doublyLinkedList);
-              this.put(cacheManagerDto.getCacheName().concat(this.keyDelimeter).concat(this.mapKeySuffix),compressedBytes);
-              this.put(cacheManagerDto.getCacheName().concat(this.keyDelimeter).concat(this.dllKeySuffix),compressedDllBytes);
+              this.put(cacheManagerDto.getCacheName().concat(this.keyDelimeter).concat(this.mapKeySuffix),compressedBytes,cacheManagerDto);
+              this.put(cacheManagerDto.getCacheName().concat(this.keyDelimeter).concat(this.dllKeySuffix),compressedDllBytes,cacheManagerDto);
           } else {
               logger.info("Cache Bytes are not null for cache name : {}",cacheManagerDto.getCacheName());
               byte[] compressedBytes = this.cacheUtility.invokeLRUAndGetCache(cacheManagerDto,servletContext);
               byte[] compressedDllBytes = this.cacheUtility.invokeLRUAndGetDLL(cacheManagerDto,servletContext);
-              this.put(cacheManagerDto.getCacheName().concat(this.keyDelimeter).concat(this.mapKeySuffix),compressedBytes);
-              this.put(cacheManagerDto.getCacheName().concat(this.keyDelimeter).concat(this.dllKeySuffix),compressedDllBytes);
+              this.put(cacheManagerDto.getCacheName().concat(this.keyDelimeter).concat(this.mapKeySuffix),compressedBytes,cacheManagerDto);
+              this.put(cacheManagerDto.getCacheName().concat(this.keyDelimeter).concat(this.dllKeySuffix),compressedDllBytes,cacheManagerDto);
           }
         }
         //TODO : Implement more statements in future
@@ -80,8 +81,8 @@ public class CachingService implements ICachingService {
      * @throws CacheException
      */
     @Override
-    public void put(String key, byte[] value) throws CacheException {
+    public void put(String key, byte[] value,CacheManagerDto cacheManagerDto) throws CacheException {
         ServletContext servletContext = (ServletContext) this.servletContainerFactory.getServletContainer(ServletContainerEnum.SERVLETCONTEXT);
-        servletContext.setAttribute(key,value);
+        this.cacheUtility.scheduleTimerTask(new Timer(),cacheManagerDto,servletContext,key,value);
     }
 }
